@@ -529,10 +529,8 @@ static void DeleteLoan()
     Console.WriteLine("Función: Eliminar préstamo (validar reglas)");
     Console.ReadKey();
 }
-<<<<<<< HEAD
 
-=======
->>>>>>> feature/search-reports-menu
+
 static void ShowSearchReportsMenu()
 {
     int option = 0;
@@ -609,24 +607,9 @@ static void ShowReportsMenu()
             case 4:
                 ReportSummary();
                 break;
-<<<<<<< HEAD
         }
     }
 }
-=======
-
-            case 5:
-                break;
-
-            default:
-                Console.WriteLine("Opción inválida");
-                Console.ReadKey();
-                break;
-        }
-    }
-}
-
->>>>>>> feature/search-reports-menu
 static void SearchBook()
 {
     Console.WriteLine("Función: Buscar libro por título, autor, ID o categoría");
