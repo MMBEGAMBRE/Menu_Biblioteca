@@ -63,12 +63,6 @@ class Program
 
 
 
-    static void ShowPersistenceMenu()
-    {
-        Console.WriteLine("Menu de guardar y cargar datos");
-        Console.ReadKey();
-    }
-
     static void ConfirmExitAndSave()
     {
         Console.WriteLine("¿Desea guardar antes de salir? (S/N)");
@@ -645,4 +639,76 @@ static void ReportSummary()
     Console.WriteLine("Función: Resumen general del sistema");
     Console.ReadKey();
 }
+static void ShowPersistenceMenu()
+{
+    int option = 0;
+
+    while (option != 4)
+    {
+        Console.Clear();
+        Console.WriteLine(" GUARDAR / CARGAR DATOS ");
+        Console.WriteLine("1. Guardar datos");
+        Console.WriteLine("2. Cargar datos");
+        Console.WriteLine("3. Reiniciar datos");
+        Console.WriteLine("4. Volver");
+
+        Console.Write("Seleccione una opción: ");
+
+        int.TryParse(Console.ReadLine(), out option);
+
+        switch (option)
+        {
+            case 1:
+                SaveData();
+                break;
+
+            case 2:
+                LoadData();
+                break;
+
+            case 3:
+                ResetData();
+                break;
+
+            case 4:
+                break;
+
+            default:
+                Console.WriteLine("Opción inválida");
+                Console.ReadKey();
+                break;
+        }
+    }
+}
+
+static void SaveData()
+{
+    Console.WriteLine("Función: Guardar datos del sistema");
+    Console.ReadKey();
+}
+
+static void LoadData()
+{
+    Console.WriteLine("Función: Cargar datos guardados");
+    Console.ReadKey();
+}
+
+static void ResetData()
+{
+    Console.WriteLine("¿Está seguro de reiniciar los datos? (S/N)");
+
+    string respuesta = Console.ReadLine();
+
+    if (respuesta.ToUpper() == "S")
+    {
+        Console.WriteLine("Datos reiniciados correctamente.");
+    }
+    else
+    {
+        Console.WriteLine("Operación cancelada.");
+    }
+
+    Console.ReadKey();
+}
+
 }
