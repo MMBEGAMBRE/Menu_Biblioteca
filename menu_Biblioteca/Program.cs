@@ -62,13 +62,6 @@ class Program
     }
 
 
-
-    static void ConfirmExitAndSave()
-    {
-        Console.WriteLine("¿Desea guardar antes de salir? (S/N)");
-        Console.ReadKey();
-    }
-
 static void ShowBooksMenu()
 {
     int option = 0;
@@ -710,5 +703,27 @@ static void ResetData()
 
     Console.ReadKey();
 }
+static void ConfirmExitAndSave()
+{
+    Console.Clear();
+    Console.WriteLine("¿Desea guardar antes de salir? (S/N)");
 
+    string respuesta = Console.ReadLine();
+
+    if (respuesta.ToUpper() == "S")
+    {
+        SaveData();
+        Console.WriteLine("Datos guardados correctamente.");
+    }
+    else if (respuesta.ToUpper() == "N")
+    {
+        Console.WriteLine("Saliendo del sistema...");
+    }
+    else
+    {
+        Console.WriteLine("Opción inválida.");
+    }
+
+    Console.ReadKey();
+}
 }
