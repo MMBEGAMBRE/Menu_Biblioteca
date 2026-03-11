@@ -63,12 +63,6 @@ class Program
 
 
 
-    static void ShowUsersMenu()
-    {
-        Console.WriteLine("Menu de usuarios");
-        Console.ReadKey();
-    }
-
     static void ShowLoansMenu()
     {
         Console.WriteLine("Menu de prestamos");
@@ -274,6 +268,141 @@ static void EditBookYearCategory()
 static void DeleteBook()
 {
     Console.WriteLine("Validar no permitir eliminar si el libro está prestado");
+    Console.ReadKey();
+}
+
+static void ShowUsersMenu()
+{
+    int option = 0;
+
+    while (option != 6)
+    {
+        Console.Clear();
+        Console.WriteLine(" MENÚ USUARIOS ");
+        Console.WriteLine("1. Registrar usuario");
+        Console.WriteLine("2. Listar usuarios");
+        Console.WriteLine("3. Ver detalle");
+        Console.WriteLine("4. Actualizar usuario");
+        Console.WriteLine("5. Eliminar usuario");
+        Console.WriteLine("6. Volver");
+
+        Console.Write("Seleccione una opción: ");
+
+        int.TryParse(Console.ReadLine(), out option);
+
+        switch (option)
+        {
+            case 1:
+                RegisterUser();
+                break;
+
+            case 2:
+                ListUsers();
+                break;
+
+            case 3:
+                ViewUserDetail();
+                break;
+
+            case 4:
+                UpdateUserMenu();
+                break;
+
+            case 5:
+                DeleteUser();
+                break;
+
+            case 6:
+                break;
+
+            default:
+                Console.WriteLine("Opción inválida");
+                Console.ReadKey();
+                break;
+        }
+    }
+}
+
+static void UpdateUserMenu()
+{
+    int option = 0;
+
+    while (option != 4)
+    {
+        Console.Clear();
+        Console.WriteLine(" ACTUALIZAR USUARIO ");
+        Console.WriteLine("1. Editar nombre");
+        Console.WriteLine("2. Editar contacto");
+        Console.WriteLine("3. Activar / Desactivar usuario");
+        Console.WriteLine("4. Volver");
+
+        Console.Write("Seleccione una opción: ");
+
+        int.TryParse(Console.ReadLine(), out option);
+
+        switch (option)
+        {
+            case 1:
+                EditUserName();
+                break;
+
+            case 2:
+                EditUserContact();
+                break;
+
+            case 3:
+                ToggleUserActiveStatus();
+                break;
+
+            case 4:
+                break;
+
+            default:
+                Console.WriteLine("Opción inválida");
+                Console.ReadKey();
+                break;
+        }
+    }
+}
+static void RegisterUser()
+{
+    Console.WriteLine("Función: Registrar usuario");
+    Console.ReadKey();
+}
+
+static void ListUsers()
+{
+    Console.WriteLine("Función: Listar usuarios");
+    Console.ReadKey();
+}
+
+static void ViewUserDetail()
+{
+    Console.WriteLine("Función: Ver detalle del usuario por ID/documento");
+    Console.ReadKey();
+}
+
+static void EditUserName()
+{
+    Console.WriteLine("Función: Editar nombre del usuario");
+    Console.ReadKey();
+}
+
+static void EditUserContact()
+{
+    Console.WriteLine("Función: Editar contacto del usuario");
+    Console.ReadKey();
+}
+
+static void ToggleUserActiveStatus()
+{
+    Console.WriteLine("Función: Activar o desactivar usuario");
+    Console.ReadKey();
+}
+
+static void DeleteUser()
+{
+    Console.WriteLine("Validar no permitir eliminar si tiene préstamos activos");
     Console.ReadKey();
 }
 }
