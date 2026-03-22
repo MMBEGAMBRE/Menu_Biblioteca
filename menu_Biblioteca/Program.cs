@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
+using system_books.Models;
 
 class Program
 {
@@ -341,7 +342,19 @@ static void UpdateUserMenu()
 }
 static void RegisterUser()
 {
-    Console.WriteLine("Función: Registrar usuario");
+    Console.Clear();
+
+    Console.Write("Ingrese nombre: ");
+    string nombre = Console.ReadLine();
+
+    Console.Write("Ingrese email: ");
+    string email = Console.ReadLine();
+
+    Usuario usuario = new Usuario(1, nombre, email);
+
+    Console.WriteLine("\nUsuario registrado:");
+    Console.WriteLine(usuario.DetalleCompleto());
+
     Console.ReadKey();
 }
 
