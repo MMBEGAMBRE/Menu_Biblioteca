@@ -8,12 +8,13 @@ namespace system_books.Models
         public Libro LibroPrestado { get; set; }
         public Usuario Usuario { get; set; }
         public DateTime FechaPrestamo { get; set; }
-        public bool Devuelto { get; set; }
+        public DateTime? FechaDevolucion { get; set; }
+        public EstadoPrestamo Estado { get; set; }
 
         public Prestamo()
         {
             FechaPrestamo = DateTime.Now;
-            Devuelto = false;
+            Estado = EstadoPrestamo.Activo;
         }
 
         public Prestamo(int id, Libro libro, Usuario usuario)
@@ -22,17 +23,32 @@ namespace system_books.Models
             LibroPrestado = libro;
             Usuario = usuario;
             FechaPrestamo = DateTime.Now;
-            Devuelto = false;
+            Estado = EstadoPrestamo.Activo;
         }
 
-        public string Detalle()
+        public bool EstaVencido()
         {
-            return $"ID: {Id}\nLibro: {LibroPrestado?.Titulo}\nUsuario: {Usuario?.Nombre}\nFecha: {FechaPrestamo}\nDevuelto: {Devuelto}";
+            return (DateTime.Now - FechaPrestamo).Days > 7;
+        }
+
+        public int DiasTranscurridos()
+        {
+            return (DateTime.Now - FechaPrestamo).Days;
+        }
+
+        public string ResumenCorto()
+        {
+            return $"Préstamo {Id}: {LibroPrestado?.Titulo} - {Usuario?.Nombre}";
+        }
+
+        public string DetalleCompleto()
+        {
+            return $"ID: {Id}\nLibro: {LibroPrestado?.Titulo}\nUsuario: {Usuario?.Nombre}\nFecha: {FechaPrestamo}\nEstado: {Estado}";
         }
 
         public override string ToString()
         {
-            return Detalle();
+            return DetalleCompleto();
         }
     }
 }

@@ -488,11 +488,26 @@ static void ListLoansMenu()
 }
 static void CreateLoan()
 {
-    Console.WriteLine("Función: Crear préstamo");
-    Console.WriteLine("Validar: usuario activo, libro disponible, límite de préstamos");
+    Console.Clear();
+
+    // Crear objetos de prueba
+    Libro libro = new Libro(1, "El Quijote", "Cervantes", 1605, "Novela");
+    Usuario usuario = new Usuario(1, "Juan", "correo@test.com");
+
+    Prestamo prestamo = new Prestamo(1, libro, usuario);
+
+    // Mostrar información
+    Console.WriteLine("PRÉSTAMO CREADO:\n");
+    Console.WriteLine(prestamo.ResumenCorto());
+
+    Console.WriteLine("\nDETALLE COMPLETO:");
+    Console.WriteLine(prestamo.DetalleCompleto());
+
+    Console.WriteLine("\n¿Está vencido?: " + prestamo.EstaVencido());
+    Console.WriteLine("Días transcurridos: " + prestamo.DiasTranscurridos());
+
     Console.ReadKey();
 }
-
 static void ListLoansAll()
 {
     Console.WriteLine("Función: Listar todos los préstamos");
