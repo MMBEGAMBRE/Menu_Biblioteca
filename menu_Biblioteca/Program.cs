@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
+using system_books.Models;
 
 class Program
 {
@@ -186,15 +187,15 @@ static void UpdateBookMenu()
         }
     }
 }
-static void Registrarlibro()
-{
-    Console.WriteLine("Función: Registrar libro");
-    Console.ReadKey();
-}
-
 static void RegisterBook()
 {
-    Console.WriteLine("Función: Registrar libro");
+    Console.Clear();
+
+    Libro libro = new Libro(1, "Prueba", "Autor");
+
+    Console.WriteLine(libro.ResumenCorto());
+    Console.WriteLine(libro.DetalleCompleto());
+
     Console.ReadKey();
 }
 
