@@ -491,7 +491,7 @@ static void CreateLoan()
     Console.Clear();
 
     // Crear objetos de prueba
-    Libro libro = new Libro(1, "El Quijote", "Cervantes", 1605, "Novela");
+  Libro libro = new Libro(1, "El Quijote", "Cervantes");
     Usuario usuario = new Usuario(1, "Juan", "correo@test.com");
 
     Prestamo prestamo = new Prestamo(1, libro, usuario);
@@ -591,7 +591,7 @@ static void ShowReportsMenu()
 {
     int option = 0;
 
-    while (option != 5)
+    while (option != 4)
     {
         Console.Clear();
         Console.WriteLine(" MENÚ REPORTES ");
