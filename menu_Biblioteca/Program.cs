@@ -1,14 +1,38 @@
 ﻿using System;
-using System.Runtime.CompilerServices;
+using System.Collections.Generic;
 using system_books.Models;
+
+namespace menu_Biblioteca;
 
 class Program
 {
+   
+    static List<Libro> LibrosPrueba = new List<Libro>();
+    static List<Usuario> UsuariosPrueba = new List<Usuario>();
+    static List<Prestamo> PrestamosPrueba = new List<Prestamo>();
+
     static void Main(string[] args)
     {
+        InicializarObjetosPrueba();
         ShowMainMenu();
     }
 
+    
+    static void InicializarObjetosPrueba()
+    {
+        // libros de prueba, usan el constructor de Libro que tú tienes: (id, titulo, autor)
+        LibrosPrueba.Add(new Libro(1, "Cien años de soledad", "Gabriel García Márquez"));
+        LibrosPrueba.Add(new Libro(2, "El principito", "Antoine de Saint-Exupéry") { Disponible = false });
+
+        //  usuarios de prueba, usan tu constructor de Usuario: (id, nombre, email)
+        UsuariosPrueba.Add(new Usuario(1, "María López", "maria@correo.com"));
+        UsuariosPrueba.Add(new Usuario(2, "Juan Pérez", "juan@correo.com"));
+
+        //  préstamo de prueba, usa tu constructor de Prestamo
+        PrestamosPrueba.Add(new Prestamo(1, LibrosPrueba[1], UsuariosPrueba[1]) { FechaPrestamo = DateTime.Now.AddDays(-10) });
+    }
+
+ 
     static void ShowMainMenu()
     {
         int option = 0;
@@ -199,9 +223,29 @@ static void RegisterBook()
     Console.ReadKey();
 }
 
+
 static void ListBooksAll()
 {
-    Console.WriteLine("Función: Listar todos los libros");
+    Console.Clear();
+    Console.WriteLine("=== Listado de todos los libros ===\n");
+    foreach (var libro in LibrosPrueba)
+    {
+        Console.WriteLine(libro.ResumenCorto());
+        Console.WriteLine("------------------------");
+    }
+
+    // Todas las validaciones que pide la actividad
+    Console.WriteLine("\n=== Validaciones de estados obligatorias ===");
+    Console.WriteLine($"Libro 1 disponible: {LibrosPrueba[0].Disponible}");
+    Console.WriteLine($"Libro 2 disponible: {LibrosPrueba[1].Disponible}");
+    Console.WriteLine($"Usuario 1 activo: {UsuariosPrueba[0].Activo}");
+    
+    var prestamoPrueba = PrestamosPrueba[0];
+    Console.WriteLine($"\nEstado del préstamo: {prestamoPrueba.Estado}");
+    Console.WriteLine($"¿El préstamo está vencido? {prestamoPrueba.EstaVencido()}");
+    Console.WriteLine($"Días transcurridos del préstamo: {prestamoPrueba.DiasTranscurridos()}");
+
+    Console.WriteLine("\nPresiona cualquier tecla para volver...");
     Console.ReadKey();
 }
 
@@ -345,10 +389,9 @@ static void RegisterUser()
     Console.Clear();
 
     Console.Write("Ingrese nombre: ");
-    string nombre = Console.ReadLine();
-
+    string nombre = Console.ReadLine()!;
     Console.Write("Ingrese email: ");
-    string email = Console.ReadLine();
+    string email = Console.ReadLine()!;
 
     Usuario usuario = new Usuario(1, nombre, email);
 
@@ -490,7 +533,7 @@ static void CreateLoan()
 {
     Console.Clear();
 
-    // Crear objetos de prueba
+    
   Libro libro = new Libro(1, "El Quijote", "Cervantes");
     Usuario usuario = new Usuario(1, "Juan", "correo@test.com");
 
@@ -718,7 +761,7 @@ static void ResetData()
 {
     Console.WriteLine("¿Está seguro de reiniciar los datos? (S/N)");
 
-    string respuesta = Console.ReadLine();
+    string respuesta = Console.ReadLine()!;
 
     if (respuesta.ToUpper() == "S")
     {
@@ -736,7 +779,7 @@ static void ConfirmExitAndSave()
     Console.Clear();
     Console.WriteLine("¿Desea guardar antes de salir? (S/N)");
 
-    string respuesta = Console.ReadLine();
+    string respuesta = Console.ReadLine()!;
 
     if (respuesta.ToUpper() == "S")
     {
