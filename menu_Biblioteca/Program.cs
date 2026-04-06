@@ -11,10 +11,10 @@ class Program
 {
     static LibroService libroService = new LibroService();
     static UsuarioService usuarioService = new UsuarioService();
+    static PrestamoService prestamoService = new PrestamoService();
 
-    static List<Libro> LibrosPrueba = new List<Libro>(); // 
-    
-    static List<Prestamo> PrestamosPrueba = new List<Prestamo>();
+    static List<Libro> LibrosPrueba = new List<Libro>(); 
+
 
     static void Main(string[] args)
     {
@@ -39,26 +39,19 @@ Console.WriteLine("============================\n");
 
     
     static void InicializarObjetosPrueba()
-    {
-        // libros de prueba, usan el constructor de Libro que tú tienes: (id, titulo, autor)
-        LibrosPrueba.Add(new Libro(1, "Cien años de soledad", "Gabriel García Márquez"));
-        LibrosPrueba.Add(new Libro(2, "El principito", "Antoine de Saint-Exupéry") { Disponible = false });
-
-        usuarioService.AgregarUsuario(new Usuario(1, "María López", "maria@correo.com"));
-        usuarioService.AgregarUsuario(new Usuario(2, "Juan Pérez", "juan@correo.com"));
-
-        //  préstamo de prueba
-var usuario = usuarioService.ObtenerTodos().First(u => u.Id == 2);
-
-PrestamosPrueba.Add(new Prestamo(
-    1,
-    LibrosPrueba[1],
-    usuario
-)
 {
-    FechaPrestamo = DateTime.Now.AddDays(-10)
-});
-    }
+    LibrosPrueba.Add(new Libro(1, "Cien años de soledad", "Gabriel García Márquez"));
+    LibrosPrueba.Add(new Libro(2, "El principito", "Antoine de Saint-Exupéry") { Disponible = false });
+
+    usuarioService.AgregarUsuario(new Usuario(1, "María López", "maria@correo.com"));
+    usuarioService.AgregarUsuario(new Usuario(2, "Juan Pérez", "juan@correo.com"));
+
+    // préstamo de prueba
+    var usuario = usuarioService.ObtenerTodos().First(u => u.Id == 2);
+
+    var prestamo = new Prestamo(1, LibrosPrueba[1], usuario);
+    prestamoService.AgregarPrestamo(prestamo);
+}
 
  
     static void ShowMainMenu()
@@ -587,27 +580,39 @@ static void CreateLoan()
 {
     Console.Clear();
 
-    
     Libro libro = libroService.ObtenerLibros().First();
     Usuario usuario = usuarioService.ObtenerTodos().First();
 
-    Prestamo prestamo = new Prestamo(1, libro, usuario);
+    int nuevoId = prestamoService.TotalPrestamos() + 1;
 
-    // Mostrar información
+    Prestamo prestamo = new Prestamo(nuevoId, libro, usuario);
+
+    prestamoService.AgregarPrestamo(prestamo);
+
+    libro.Disponible = false;
+
     Console.WriteLine("PRÉSTAMO CREADO:\n");
     Console.WriteLine(prestamo.ResumenCorto());
 
-    Console.WriteLine("\nDETALLE COMPLETO:");
-    Console.WriteLine(prestamo.DetalleCompleto());
-
-    Console.WriteLine("\n¿Está vencido?: " + prestamo.EstaVencido());
-    Console.WriteLine("Días transcurridos: " + prestamo.DiasTranscurridos());
+    Console.WriteLine("\nTOTAL PRÉSTAMOS: " + prestamoService.TotalPrestamos());
 
     Console.ReadKey();
 }
 static void ListLoansAll()
 {
-    Console.WriteLine("Función: Listar todos los préstamos");
+    Console.Clear();
+    Console.WriteLine(" LISTADO DE PRÉSTAMOS ");
+
+    var prestamos = prestamoService.ObtenerTodos();
+
+    foreach (var prestamo in prestamos)
+    {
+        Console.WriteLine(prestamo.ResumenCorto());
+        Console.WriteLine("");
+    }
+
+    Console.WriteLine("\nTotal préstamos: " + prestamoService.TotalPrestamos());
+
     Console.ReadKey();
 }
 
