@@ -1,16 +1,19 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using system_books.Models;
 using system_books.Services;
+
 
 namespace menu_Biblioteca;
 
 class Program
 {
     static LibroService libroService = new LibroService();
+    static UsuarioService usuarioService = new UsuarioService();
 
     static List<Libro> LibrosPrueba = new List<Libro>(); // 
-    static List<Usuario> UsuariosPrueba = new List<Usuario>();
+    
     static List<Prestamo> PrestamosPrueba = new List<Prestamo>();
 
     static void Main(string[] args)
@@ -41,12 +44,20 @@ Console.WriteLine("============================\n");
         LibrosPrueba.Add(new Libro(1, "Cien años de soledad", "Gabriel García Márquez"));
         LibrosPrueba.Add(new Libro(2, "El principito", "Antoine de Saint-Exupéry") { Disponible = false });
 
-        //  usuarios de prueba, usan tu constructor de Usuario: (id, nombre, email)
-        UsuariosPrueba.Add(new Usuario(1, "María López", "maria@correo.com"));
-        UsuariosPrueba.Add(new Usuario(2, "Juan Pérez", "juan@correo.com"));
+        usuarioService.AgregarUsuario(new Usuario(1, "María López", "maria@correo.com"));
+        usuarioService.AgregarUsuario(new Usuario(2, "Juan Pérez", "juan@correo.com"));
 
-        //  préstamo de prueba, usa tu constructor de Prestamo
-        PrestamosPrueba.Add(new Prestamo(1, LibrosPrueba[1], UsuariosPrueba[1]) { FechaPrestamo = DateTime.Now.AddDays(-10) });
+        //  préstamo de prueba
+var usuario = usuarioService.ObtenerTodos().First(u => u.Id == 2);
+
+PrestamosPrueba.Add(new Prestamo(
+    1,
+    LibrosPrueba[1],
+    usuario
+)
+{
+    FechaPrestamo = DateTime.Now.AddDays(-10)
+});
     }
 
  
@@ -421,9 +432,12 @@ static void RegisterUser()
     Console.Write("Ingrese email: ");
     string email = Console.ReadLine()!;
 
-    Usuario usuario = new Usuario(1, nombre, email);
+    int nuevoId = usuarioService.TotalUsuarios() + 1;
+Usuario usuario = new Usuario(nuevoId, nombre, email);
 
-    Console.WriteLine("\nUsuario registrado:");
+    usuarioService.AgregarUsuario(usuario);
+
+    Console.WriteLine("\nUsuario registrado correctamente en el sistema:");
     Console.WriteLine(usuario.DetalleCompleto());
 
     Console.ReadKey();
@@ -431,10 +445,22 @@ static void RegisterUser()
 
 static void ListUsers()
 {
-    Console.WriteLine("Función: Listar usuarios");
+    Console.Clear();
+    Console.WriteLine(" LISTA DE USUARIOS ");
+
+    foreach (var usuario in usuarioService.ObtenerTodos())
+    {
+        Console.WriteLine(usuario.DetalleCompleto());
+        Console.WriteLine("---");
+    }
+
+    Console.WriteLine("\nTotal usuarios: " + usuarioService.TotalUsuarios());
+
+    var estados = usuarioService.UsuariosPorEstado();
+    Console.WriteLine($"Activos: {estados.activos} | Inactivos: {estados.inactivos}");
+
     Console.ReadKey();
 }
-
 static void ViewUserDetail()
 {
     Console.WriteLine("Función: Ver detalle del usuario por ID/documento");
@@ -562,8 +588,8 @@ static void CreateLoan()
     Console.Clear();
 
     
-  Libro libro = new Libro(1, "El Quijote", "Cervantes");
-    Usuario usuario = new Usuario(1, "Juan", "correo@test.com");
+    Libro libro = libroService.ObtenerLibros().First();
+    Usuario usuario = usuarioService.ObtenerTodos().First();
 
     Prestamo prestamo = new Prestamo(1, libro, usuario);
 
