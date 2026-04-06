@@ -1,21 +1,38 @@
 ﻿using System;
 using System.Collections.Generic;
 using system_books.Models;
+using system_books.Services;
 
 namespace menu_Biblioteca;
 
 class Program
 {
-   
-    static List<Libro> LibrosPrueba = new List<Libro>();
+    static LibroService libroService = new LibroService();
+
+    static List<Libro> LibrosPrueba = new List<Libro>(); // 
     static List<Usuario> UsuariosPrueba = new List<Usuario>();
     static List<Prestamo> PrestamosPrueba = new List<Prestamo>();
 
     static void Main(string[] args)
     {
         InicializarObjetosPrueba();
+
+       // PASAR DATOS DE PRUEBA AL SERVICE
+foreach (var libro in LibrosPrueba)
+{
+    libroService.AgregarLibro(libro);
+}
+
+// PRUEBA LIBROSERVICE
+Console.WriteLine("=== PRUEBA LIBROSERVICE ===");
+Console.WriteLine("Total libros: " + libroService.TotalLibros());
+Console.WriteLine("Disponibles: " + libroService.LibrosDisponibles());
+Console.WriteLine("Prestados: " + libroService.LibrosPrestados());
+Console.WriteLine("============================\n");
+
         ShowMainMenu();
     }
+
 
     
     static void InicializarObjetosPrueba()
@@ -228,36 +245,47 @@ static void ListBooksAll()
 {
     Console.Clear();
     Console.WriteLine("=== Listado de todos los libros ===\n");
-    foreach (var libro in LibrosPrueba)
+
+    foreach (var libro in libroService.ObtenerLibros())
     {
         Console.WriteLine(libro.ResumenCorto());
         Console.WriteLine("------------------------");
     }
 
-    // Todas las validaciones que pide la actividad
-    Console.WriteLine("\n=== Validaciones de estados obligatorias ===");
-    Console.WriteLine($"Libro 1 disponible: {LibrosPrueba[0].Disponible}");
-    Console.WriteLine($"Libro 2 disponible: {LibrosPrueba[1].Disponible}");
-    Console.WriteLine($"Usuario 1 activo: {UsuariosPrueba[0].Activo}");
-    
-    var prestamoPrueba = PrestamosPrueba[0];
-    Console.WriteLine($"\nEstado del préstamo: {prestamoPrueba.Estado}");
-    Console.WriteLine($"¿El préstamo está vencido? {prestamoPrueba.EstaVencido()}");
-    Console.WriteLine($"Días transcurridos del préstamo: {prestamoPrueba.DiasTranscurridos()}");
+    // KPIs correctos del Service
+    Console.WriteLine("\n=== KPIs ===");
+    Console.WriteLine("Total: " + libroService.TotalLibros());
+    Console.WriteLine("Disponibles: " + libroService.LibrosDisponibles());
+    Console.WriteLine("Prestados: " + libroService.LibrosPrestados());
 
     Console.WriteLine("\nPresiona cualquier tecla para volver...");
     Console.ReadKey();
 }
-
 static void ListBooksAvailable()
 {
-    Console.WriteLine("Función: Listar libros disponibles");
+    Console.Clear();
+    Console.WriteLine("=== LIBROS DISPONIBLES ===\n");
+
+    foreach (var libro in libroService.ObtenerLibros())
+    {
+        if (libro.Disponible)
+            Console.WriteLine(libro.ResumenCorto());
+    }
+
     Console.ReadKey();
 }
 
 static void ListBooksBorrowed()
 {
-    Console.WriteLine("Función: Listar libros prestados");
+    Console.Clear();
+    Console.WriteLine("=== LIBROS PRESTADOS ===\n");
+
+    foreach (var libro in libroService.ObtenerLibros())
+    {
+        if (!libro.Disponible)
+            Console.WriteLine(libro.ResumenCorto());
+    }
+
     Console.ReadKey();
 }
 
@@ -797,4 +825,5 @@ static void ConfirmExitAndSave()
 
     Console.ReadKey();
 }
+
 }
