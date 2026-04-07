@@ -5,7 +5,7 @@ using system_books.Models;
 using system_books.Services;
 
 
-namespace menu_Biblioteca;
+namespace menu_Biblioteca; 
 
 class Program
 {
@@ -33,6 +33,8 @@ Console.WriteLine("Disponibles: " + libroService.LibrosDisponibles());
 Console.WriteLine("Prestados: " + libroService.LibrosPrestados());
 Console.WriteLine("============================\n");
 
+ CompararArrayVsList();
+
         ShowMainMenu();
     }
 
@@ -51,6 +53,41 @@ Console.WriteLine("============================\n");
 
     var prestamo = new Prestamo(1, LibrosPrueba[1], usuario);
     prestamoService.AgregarPrestamo(prestamo);
+}
+static void CompararArrayVsList()
+{
+    Console.Clear();
+
+    Console.WriteLine("=== COMPARACIÓN ARRAY vs LIST ===\n");
+
+    // ARRAY
+    string[] librosArray = new string[2];
+    librosArray[0] = "Cien años de soledad";
+    librosArray[1] = "El principito";
+
+    Console.WriteLine("ARRAY:");
+    foreach (var libro in librosArray)
+    {
+        Console.WriteLine(libro);
+    }
+
+    // LIST
+    List<string> librosList = new List<string>();
+    librosList.Add("Cien años de soledad");
+    librosList.Add("El principito");
+    librosList.Add("Don Quijote");
+
+    Console.WriteLine("\nLIST:");
+    foreach (var libro in librosList)
+    {
+        Console.WriteLine(libro);
+    }
+
+    Console.WriteLine("\nDIFERENCIA:");
+    Console.WriteLine("- Array: tamaño fijo");
+    Console.WriteLine("- List: tamaño dinámico");
+
+    Console.ReadKey();
 }
 
  
@@ -240,7 +277,23 @@ static void Registrarlibro()
 
 static void RegisterBook()
 {
-    Console.WriteLine("Función: Registrar libro");
+    Console.Clear();
+
+    Console.Write("Ingrese título: ");
+    string titulo = Console.ReadLine()!;
+
+    Console.Write("Ingrese autor: ");
+    string autor = Console.ReadLine()!;
+
+    int id = libroService.TotalLibros() + 1;
+
+    Libro libro = new Libro(id, titulo, autor);
+
+    libroService.AgregarLibro(libro);
+
+    Console.WriteLine("\nLibro registrado correctamente:");
+    Console.WriteLine(libro.ResumenCorto());
+
     Console.ReadKey();
 }
 
@@ -301,7 +354,29 @@ static void ViewBookDetail()
 
 static void EditBookTitle()
 {
-    Console.WriteLine("Función: Editar título del libro");
+    Console.Clear();
+
+    Console.Write("Ingrese ID del libro: ");
+    int id = int.Parse(Console.ReadLine()!);
+
+    var libro = libroService.BuscarPorId(id);
+
+    if (libro == null)
+    {
+        Console.WriteLine("Libro no encontrado.");
+    }
+    else
+    {
+        Console.WriteLine("Título actual: " + libro.Titulo);
+
+        Console.Write("Nuevo título: ");
+        string nuevoTitulo = Console.ReadLine()!;
+
+        libro.Titulo = nuevoTitulo;
+
+        Console.WriteLine("Título actualizado correctamente.");
+    }
+
     Console.ReadKey();
 }
 
@@ -319,7 +394,27 @@ static void EditBookYearCategory()
 
 static void DeleteBook()
 {
-    Console.WriteLine("Validar no permitir eliminar si el libro está prestado");
+    Console.Clear();
+
+    Console.Write("Ingrese ID del libro a eliminar: ");
+    int id = int.Parse(Console.ReadLine()!);
+
+    var libro = libroService.BuscarPorId(id);
+
+    if (libro == null)
+    {
+        Console.WriteLine("El libro no existe.");
+    }
+    else if (!libro.Disponible)
+    {
+        Console.WriteLine("No se puede eliminar porque el libro está prestado.");
+    }
+    else
+    {
+        libroService.EliminarLibro(id);
+        Console.WriteLine("Libro eliminado correctamente.");
+    }
+
     Console.ReadKey();
 }
 
@@ -420,17 +515,23 @@ static void RegisterUser()
 {
     Console.Clear();
 
+    Console.Write("Ingrese documento: ");
+    string documento = Console.ReadLine()!;
+
     Console.Write("Ingrese nombre: ");
     string nombre = Console.ReadLine()!;
+
     Console.Write("Ingrese email: ");
     string email = Console.ReadLine()!;
 
     int nuevoId = usuarioService.TotalUsuarios() + 1;
-Usuario usuario = new Usuario(nuevoId, nombre, email);
+
+    Usuario usuario = new Usuario(nuevoId, nombre, email);
+    usuario.Documento = documento;
 
     usuarioService.AgregarUsuario(usuario);
 
-    Console.WriteLine("\nUsuario registrado correctamente en el sistema:");
+    Console.WriteLine("\nUsuario registrado correctamente:");
     Console.WriteLine(usuario.DetalleCompleto());
 
     Console.ReadKey();
@@ -462,7 +563,29 @@ static void ViewUserDetail()
 
 static void EditUserName()
 {
-    Console.WriteLine("Función: Editar nombre del usuario");
+    Console.Clear();
+
+    Console.Write("Ingrese documento del usuario: ");
+    string documento = Console.ReadLine()!;
+
+    var usuario = usuarioService.BuscarPorDocumento(documento);
+
+    if (usuario == null)
+    {
+        Console.WriteLine("Usuario no encontrado.");
+    }
+    else
+    {
+        Console.WriteLine("Nombre actual: " + usuario.Nombre);
+
+        Console.Write("Nuevo nombre: ");
+        string nuevoNombre = Console.ReadLine()!;
+
+        usuario.Nombre = nuevoNombre;
+
+        Console.WriteLine("Nombre actualizado correctamente.");
+    }
+
     Console.ReadKey();
 }
 
@@ -480,7 +603,34 @@ static void ToggleUserActiveStatus()
 
 static void DeleteUser()
 {
-    Console.WriteLine("Validar no permitir eliminar si tiene préstamos activos");
+    Console.Clear();
+
+    Console.Write("Ingrese ID del usuario a eliminar: ");
+    int id = int.Parse(Console.ReadLine()!);
+
+    var usuario = usuarioService.ObtenerTodos()
+        .FirstOrDefault(u => u.Id == id);
+
+    if (usuario == null)
+    {
+        Console.WriteLine("Usuario no encontrado.");
+    }
+    else
+    {
+        var prestamosActivos = prestamoService.ObtenerTodos()
+            .Any(p => p.Usuario.Id == id && p.Estado.ToString() == "Activo");
+
+        if (prestamosActivos)
+        {
+            Console.WriteLine("No se puede eliminar, tiene préstamos activos.");
+        }
+        else
+        {
+            usuarioService.EliminarUsuario(usuario.Documento); // o por ID si lo cambias
+            Console.WriteLine("Usuario eliminado correctamente.");
+        }
+    }
+
     Console.ReadKey();
 }
 
@@ -580,8 +730,32 @@ static void CreateLoan()
 {
     Console.Clear();
 
-    Libro libro = libroService.ObtenerLibros().First();
-    Usuario usuario = usuarioService.ObtenerTodos().First();
+    Console.WriteLine("=== CREAR PRÉSTAMO ===");
+
+    Console.Write("ID del libro: ");
+    int libroId = int.Parse(Console.ReadLine()!);
+
+    var libro = libroService.BuscarPorId(libroId);
+
+    if (libro == null || !libro.Disponible)
+    {
+        Console.WriteLine("Libro no disponible.");
+        Console.ReadKey();
+        return;
+    }
+
+    Console.Write("ID del usuario: ");
+    int usuarioId = int.Parse(Console.ReadLine()!);
+
+    var usuario = usuarioService.ObtenerTodos()
+        .FirstOrDefault(u => u.Id == usuarioId);
+
+    if (usuario == null)
+    {
+        Console.WriteLine("Usuario no existe.");
+        Console.ReadKey();
+        return;
+    }
 
     int nuevoId = prestamoService.TotalPrestamos() + 1;
 
@@ -591,10 +765,8 @@ static void CreateLoan()
 
     libro.Disponible = false;
 
-    Console.WriteLine("PRÉSTAMO CREADO:\n");
+    Console.WriteLine("\nPréstamo creado correctamente:");
     Console.WriteLine(prestamo.ResumenCorto());
-
-    Console.WriteLine("\nTOTAL PRÉSTAMOS: " + prestamoService.TotalPrestamos());
 
     Console.ReadKey();
 }
@@ -618,32 +790,107 @@ static void ListLoansAll()
 
 static void ListLoansActive()
 {
-    Console.WriteLine("Función: Listar préstamos activos");
+    Console.Clear();
+    Console.WriteLine("=== PRÉSTAMOS ACTIVOS ===\n");
+
+    var activos = prestamoService.ObtenerTodos()
+        .Where(p => p.Estado.ToString() == "Activo");
+
+    foreach (var p in activos)
+    {
+        Console.WriteLine(p.ResumenCorto());
+        Console.WriteLine("---");
+    }
+
     Console.ReadKey();
 }
 
 static void ListLoansClosed()
 {
-    Console.WriteLine("Función: Listar préstamos cerrados");
+    Console.Clear();
+    Console.WriteLine("=== PRÉSTAMOS DEVUELTOS ===\n");
+
+    var cerrados = prestamoService.ObtenerTodos()
+        .Where(p => p.Estado.ToString() == "Devuelto");
+
+    foreach (var p in cerrados)
+    {
+        Console.WriteLine(p.ResumenCorto());
+        Console.WriteLine("---");
+    }
+
     Console.ReadKey();
 }
 
 static void ViewLoanDetail()
 {
-    Console.WriteLine("Función: Ver detalle del préstamo por ID");
+    Console.Clear();
+
+    Console.Write("Ingrese ID del préstamo: ");
+    int id = int.Parse(Console.ReadLine()!);
+
+    var prestamo = prestamoService.BuscarPorId(id);
+
+    if (prestamo == null)
+    {
+        Console.WriteLine("Préstamo no encontrado.");
+    }
+    else
+    {
+        Console.WriteLine("\n=== DETALLE ===");
+        Console.WriteLine(prestamo.DetalleCompleto());
+    }
+
     Console.ReadKey();
 }
 
 static void RegisterReturn()
 {
-    Console.WriteLine("Función: Registrar devolución del libro");
-    Console.WriteLine("Marcar préstamo como devuelto y libro disponible");
+    Console.Clear();
+
+    Console.Write("ID del préstamo: ");
+    int id = int.Parse(Console.ReadLine()!);
+
+    var prestamo = prestamoService.BuscarPorId(id);
+
+    if (prestamo == null)
+    {
+        Console.WriteLine("Préstamo no existe.");
+    }
+    else
+    {
+        prestamo.Estado = EstadoPrestamo.Devuelto;
+        prestamo.LibroPrestado.Disponible = true;
+
+        Console.WriteLine("Devolución registrada correctamente.");
+    }
+
     Console.ReadKey();
 }
 
 static void DeleteLoan()
 {
-    Console.WriteLine("Función: Eliminar préstamo (validar reglas)");
+    Console.Clear();
+
+    Console.Write("Ingrese ID del préstamo a eliminar: ");
+    int id = int.Parse(Console.ReadLine()!);
+
+    var prestamo = prestamoService.BuscarPorId(id);
+
+    if (prestamo == null)
+    {
+        Console.WriteLine("No existe.");
+    }
+    else if (prestamo.Estado.ToString() == "Activo")
+    {
+        Console.WriteLine("No se puede eliminar un préstamo activo.");
+    }
+    else
+    {
+        prestamoService.EliminarPrestamo(id);
+        Console.WriteLine("Préstamo eliminado.");
+    }
+
     Console.ReadKey();
 }
 
@@ -693,7 +940,7 @@ static void ShowReportsMenu()
 {
     int option = 0;
 
-    while (option != 4)
+    while (option != 5)
     {
         Console.Clear();
         Console.WriteLine(" MENÚ REPORTES ");
@@ -729,13 +976,44 @@ static void ShowReportsMenu()
 }
 static void SearchBook()
 {
-    Console.WriteLine("Función: Buscar libro por título, autor, ID o categoría");
+    Console.Clear();
+
+    Console.Write("Ingrese título a buscar: ");
+    string titulo = Console.ReadLine()!;
+
+    var resultados = libroService.ObtenerLibros()
+        .Where(l => l.Titulo.ToLower().Contains(titulo.ToLower()))
+        .ToList();
+
+    if (resultados.Count == 0)
+    {
+        Console.WriteLine("No se encontraron libros.");
+    }
+    else
+    {
+        foreach (var libro in resultados)
+        {
+            Console.WriteLine(libro.ResumenCorto());
+        }
+    }
+
     Console.ReadKey();
 }
 
 static void SearchUser()
 {
-    Console.WriteLine("Función: Buscar usuario por nombre o ID");
+    Console.Clear();
+
+    Console.Write("Ingrese nombre: ");
+    string nombre = Console.ReadLine()!;
+
+    var usuarios = usuarioService.BuscarPorNombre(nombre);
+
+    foreach (var u in usuarios)
+    {
+        Console.WriteLine(u.DetalleCompleto());
+    }
+
     Console.ReadKey();
 }
 
@@ -759,7 +1037,27 @@ static void ReportOverdue()
 
 static void ReportSummary()
 {
-    Console.WriteLine("Función: Resumen general del sistema");
+    Console.Clear();
+
+    Console.WriteLine("=== RESUMEN DEL SISTEMA ===\n");
+
+    Console.WriteLine("LIBROS:");
+    Console.WriteLine("Total: " + libroService.TotalLibros());
+    Console.WriteLine("Disponibles: " + libroService.LibrosDisponibles());
+    Console.WriteLine("Prestados: " + libroService.LibrosPrestados());
+
+    Console.WriteLine("\nUSUARIOS:");
+    Console.WriteLine("Total: " + usuarioService.TotalUsuarios());
+    var estados = usuarioService.UsuariosPorEstado();
+    Console.WriteLine($"Activos: {estados.activos}");
+    Console.WriteLine($"Inactivos: {estados.inactivos}");
+
+    Console.WriteLine("\nPRÉSTAMOS:");
+    Console.WriteLine("Total: " + prestamoService.TotalPrestamos());
+    Console.WriteLine("Activos: " + prestamoService.PrestamosActivos());
+    Console.WriteLine("Devueltos: " + prestamoService.PrestamosDevueltos());
+    Console.WriteLine("Promedio días: " + prestamoService.PromedioDiasPrestamo());
+
     Console.ReadKey();
 }
 static void ShowPersistenceMenu()
